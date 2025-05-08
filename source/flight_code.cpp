@@ -4,7 +4,10 @@
 bool compare_flight_codes(const std::string& s_1, const std::string& s_2) { return false; }
 
 
-bool flight_code_t::operator==(const flight_code_t& other) const { return false; }
+bool flight_code_t::operator==(const flight_code_t& other) const {
+    return company_code == other.company_code && flight_num == other.flight_num;
+}
+
 
 bool flight_code_t::parse_with_cctype(const std::string& s) { return false; }
 
