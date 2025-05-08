@@ -8,8 +8,43 @@ bool flight_code_t::operator==(const flight_code_t& other) const {
     return company_code == other.company_code && flight_num == other.flight_num;
 }
 
+bool flight_code_t::parse_with_cctype(const std::string& s) {
+    if (s.empty() || s.length() > 7)
+        return false;
+    using std::isupper, std::isdigit;
 
-bool flight_code_t::parse_with_cctype(const std::string& s) { return false; }
+    std::string_view flight_num_s = s;
+
+    bool company_code_is_three_letters = s.length() > 3 && isupper(s[0]) && isupper(s[1]) && isupper(s[2]);
+    bool company_code_is_two_alnum = s.length() > 2 &&
+        (isdigit(s[0]) || isupper(s[0])) &&
+        (isdigit(s[1]) || isupper(s[1])) &&
+        (isupper(s[0]) || isupper(s[1]));
+    bool company_code_has_space = s.length() > 2 && s[2] == ' ';
+
+    if (company_code_is_three_letters) {
+        company_code[0] = s[0];
+        company_code[1] = s[1];
+        company_code[2] = s[2];
+        flight_num_s = flight_num_s.substr(3);
+    } else if (company_code_is_two_alnum) {
+        company_code[0] = s[0];
+        company_code[1] = s[1];
+        flight_num_s = flight_num_s.substr(2 + company_code_has_space);
+    }
+
+    bool valid_flight_number = !flight_num_s.empty()
+        && flight_num_s.length() <= 5
+        && std::all_of(flight_num_s.begin(), flight_num_s.end(), [](const char c) { return isdigit(c);});
+
+    if (valid_flight_number) {
+        flight_num = std::stoi(flight_num_s.data());
+        return true;
+    }
+
+    return false;
+}
+
 bool flight_code_t::parse_with_regex(const std::string& s) {
     static const std::regex company_patterns{"([A-Z]{3})|([A-Z][0-9A-Z] ?)|([0-9A-Z][A-Z] ?)"};
     if (s.empty() || s.length() > 7)
