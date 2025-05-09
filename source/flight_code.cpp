@@ -8,6 +8,33 @@ bool flight_code_t::operator==(const flight_code_t& other) const {
     return company_code == other.company_code && flight_num == other.flight_num;
 }
 
+bool flight_code_t::parse(const std::string& s) {
+    switch (comparison_version) {
+    case regex_version:
+        return parse_with_regex(s);
+    default:
+        return parse_with_cctype(s);
+    }
+}
+
+std::array<char, 4> flight_code_t::get_company_code() const { return company_code; }
+
+uint32_t flight_code_t::get_flight_num() const { return flight_num; }
+
+std::string flight_code_t::get_app_version() {
+    switch (comparison_version) {
+    case regex_version:
+        return {"regex"};
+    default:
+        return {"cctype"};
+    }
+}
+
+void flight_code_t::set_cctype_version() { comparison_version = cctype_version; }
+
+void flight_code_t::set_regex_version() { comparison_version = regex_version; }
+
+
 bool flight_code_t::parse_with_cctype(const std::string& s) {
     if (s.empty() || s.length() > 7)
         return false;
@@ -71,8 +98,3 @@ bool flight_code_t::parse_with_regex(const std::string& s) {
 
     return false;
 }
-
-
-std::array<char, 4> flight_code_t::get_company_code() const { return company_code; }
-
-uint32_t flight_code_t::get_flight_num() const { return flight_num; }
