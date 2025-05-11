@@ -1,7 +1,12 @@
+#include <algorithm>
+#include <cctype>
 #include <regex>
 #include "flight_code.h"
 
-bool compare_flight_codes(const std::string& s_1, const std::string& s_2) { return false; }
+bool compare_flight_codes(const std::string& s_1, const std::string& s_2) {
+    flight_code_t fc_1, fc_2;
+    return fc_1.parse(s_1) && fc_2.parse(s_2) && fc_1 == fc_2;
+}
 
 
 bool flight_code_t::operator==(const flight_code_t& other) const {
