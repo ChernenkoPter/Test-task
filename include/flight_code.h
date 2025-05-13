@@ -28,5 +28,5 @@ private:
     uint32_t flight_num = 100000;
 
 private:
-    static inline enum { cctype_version, regex_version } comparison_version = cctype_version;
+    static enum parsing_algorithm_t { cctype_version, regex_version } parsing_algorithm;
 };

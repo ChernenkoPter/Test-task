@@ -3,6 +3,8 @@
 #include <regex>
 #include "flight_code.h"
 
+flight_code_t::parsing_algorithm_t flight_code_t::parsing_algorithm = flight_code_t::cctype_version;
+
 bool compare_flight_codes(const std::string& s_1, const std::string& s_2) {
     flight_code_t fc_1, fc_2;
     return fc_1.parse(s_1) && fc_2.parse(s_2) && fc_1 == fc_2;
@@ -14,7 +16,7 @@ bool flight_code_t::operator==(const flight_code_t& other) const {
 }
 
 bool flight_code_t::parse(const std::string& s) {
-    switch (comparison_version) {
+    switch (parsing_algorithm) {
     case regex_version:
         return parse_with_regex(s);
     default:
@@ -27,7 +29,7 @@ std::array<char, 4> flight_code_t::get_company_code() const { return company_cod
 uint32_t flight_code_t::get_flight_num() const { return flight_num; }
 
 std::string flight_code_t::get_app_version() {
-    switch (comparison_version) {
+    switch (parsing_algorithm) {
     case regex_version:
         return {"regex"};
     default:
@@ -35,9 +37,9 @@ std::string flight_code_t::get_app_version() {
     }
 }
 
-void flight_code_t::set_cctype_version() { comparison_version = cctype_version; }
+void flight_code_t::set_cctype_version() { parsing_algorithm = cctype_version; }
 
-void flight_code_t::set_regex_version() { comparison_version = regex_version; }
+void flight_code_t::set_regex_version() { parsing_algorithm = regex_version; }
 
 
 bool flight_code_t::parse_with_cctype(const std::string& s) {
